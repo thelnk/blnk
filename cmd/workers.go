@@ -173,8 +173,13 @@ func workerCommands(b *blnkInstance) *cobra.Command {
 			}
 
 			// Initialize the Asynq server with Redis as the backend and the queue configuration.
+			redisOpt, err := asynq.ParseRedisURI(conf.Redis.Dns)
+			if err != nil {
+				log.Printf("Error parsing Redis URI: %v", err)
+				return
+			}
 			srv := asynq.NewServer(
-				asynq.RedisClientOpt{Addr: conf.Redis.Dns},
+				redisOpt,
 				asynq.Config{
 					Concurrency: 1, // Set the concurrency level for processing tasks
 					Queues:      queues,
